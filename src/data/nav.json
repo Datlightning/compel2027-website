@@ -2,7 +2,7 @@
   "items": [
     { "label": "Home", "path": "/" },
     {
-      "label": "Author information",
+      "label": "Author Information",
       "id": "author-information",
       "children": [
         { "label": "Digest Information", "path": "/digest-information/" },
