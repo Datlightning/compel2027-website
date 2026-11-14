@@ -1,0 +1,11 @@
+{
+  "note": "11:59 PM CT for all dates",
+  "rows": [
+    { "milestone": "Tutorial Proposal Deadline", "date": "2027-02-19", "display": "February 19, 2027" },
+    { "milestone": "Digest Submission", "date": "2027-02-19", "display": "February 19, 2027" },
+    { "milestone": "Notification of Acceptance", "date": "2027-03-26", "display": "March 26, 2027" },
+    { "milestone": "Oral Pitch Submission", "date": "2027-04-09", "display": "April 9, 2027" },
+    { "milestone": "Oral Notification", "date": "2027-05-10", "display": "May 10, 2027" },
+    { "milestone": "Final Material Submission", "date": "2027-06-01", "display": "June 1, 2027" }
+  ]
+}

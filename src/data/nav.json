@@ -1,0 +1,36 @@
+{
+  "items": [
+    { "label": "Home", "path": "/" },
+    {
+      "label": "Author information",
+      "id": "author-information",
+      "children": [
+        { "label": "Digest Information", "path": "/digest-information/" },
+        { "label": "Pitch Information", "path": "/pitch-information/" }
+      ]
+    },
+    {
+      "label": "Program",
+      "id": "program",
+      "children": [
+        { "label": "Tutorials", "path": "/tutorials/" },
+        { "label": "Keynotes", "path": "/keynotes/" },
+        { "label": "Schedule at a Glance", "path": "/schedule/" }
+      ]
+    },
+    {
+      "label": "Logistics",
+      "id": "logistics",
+      "children": [
+        { "label": "Venues", "path": "/venues/" },
+        { "label": "Travel", "path": "/travel/" },
+        { "label": "Committee", "path": "/committee/" },
+        { "label": "Contact Us", "path": "/contact/" }
+      ]
+    }
+  ],
+  "cta": [
+    { "label": "Registration", "siteKey": "registrationUrl", "variant": "primary" },
+    { "label": "Digest Submission", "siteKey": "submissionUrl", "variant": "outline" }
+  ]
+}

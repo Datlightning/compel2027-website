@@ -1,0 +1,83 @@
+---
+/**
+ * Important dates — a real <table> fed by src/data/dates.json
+ * ({ note, rows: [{ milestone, date: "YYYY-MM-DD", display }] }).
+ * The inline script marks rows whose date has passed (deadlines are end of day, Central Time).
+ */
+import dates from '../../data/dates.json';
+---
+
+<div class="dates">
+  <table class="table table--band" data-dates>
+    <caption>Important dates</caption>
+    <thead>
+      <tr>
+        <th scope="col">Milestone</th>
+        <th scope="col" class="num">Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        dates.rows.map((row) => (
+          <tr data-date={row.date}>
+            <th scope="row">{row.milestone}</th>
+            <td class="num">
+              <time datetime={row.date}>{row.display}</time>
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+  <p class="dates__note">{dates.note}</p>
+</div>
+
+<script is:inline>
+  (function () {
+    var today;
+    try {
+      // en-CA formats as YYYY-MM-DD; deadlines run to the end of the day in Central Time
+      today = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'America/Chicago',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).format(new Date());
+    } catch (e) {
+      return;
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(today)) return;
+    var rows = document.querySelectorAll('[data-dates] tr[data-date]');
+    for (var i = 0; i < rows.length; i++) {
+      if (rows[i].getAttribute('data-date') < today) {
+        rows[i].classList.add('is-past');
+        var note = document.createElement('span');
+        note.className = 'visually-hidden';
+        note.textContent = ' (passed)';
+        rows[i].lastElementChild.appendChild(note);
+      }
+    }
+  })();
+</script>
+
+<style>
+  td.num {
+    white-space: nowrap;
+  }
+  tbody th {
+    color: var(--slate);
+  }
+  .dates__note {
+    margin-top: var(--space-16);
+    font-family: var(--font-ui);
+    font-size: var(--fs-16);
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  tr.is-past th,
+  tr.is-past td {
+    color: var(--muted);
+    font-weight: 500;
+    text-decoration: line-through;
+  }
+</style>

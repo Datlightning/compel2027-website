@@ -1,0 +1,163 @@
+---
+/**
+ * Home hero — full-bleed campus photo (no overlay), the white title block that overlaps
+ * it, and the two large calls to action. Text and URLs come from src/data/site.json.
+ * To change the photo, replace public/images/hero-campus.jpg.
+ */
+import Button from '../Button.astro';
+import site from '../../data/site.json';
+import { href } from '../../lib/url';
+---
+
+<div class="hero">
+  <img
+    class="hero__photo"
+    src={href('/images/hero-campus.jpg')}
+    alt="Aerial view of the University of Texas at Austin campus"
+    width="2000"
+    height="760"
+    fetchpriority="high"
+    decoding="async"
+  />
+  <div class="container hero__body">
+    <div class="hero__title">
+      <h1>{site.name}</h1>
+      <p class="hero__full display">{site.fullName}</p>
+      <p class="hero__meta">
+        <span>{site.institution}</span>
+        <span class="tabular">{site.dates}</span>
+      </p>
+    </div>
+    <div class="hero__actions">
+      <Button href={site.registrationUrl} size="lg" block>Registration</Button>
+      <Button href={site.submissionUrl} variant="secondary" size="lg" block>Digest Submission</Button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .hero__photo {
+    display: block;
+    width: 100%;
+    height: clamp(240px, 34vw, 420px);
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  .hero__body {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    align-items: end;
+  }
+
+  /* White block cut into the bottom of the photo. Its paper runs off the left edge of the
+     viewport so the text keeps the page's left margin. */
+  .hero__title {
+    position: relative;
+    grid-column: 1 / span 8;
+    margin-top: calc(-1 * var(--space-72));
+    padding: var(--space-32) var(--space-48) 0 0;
+    background: var(--paper);
+  }
+  .hero__title::before {
+    content: '';
+    position: absolute;
+    inset: 0 100% 0 auto;
+    width: 100vw;
+    background: var(--paper);
+  }
+
+  h1 {
+    font-size: clamp(64px, 10vw, 136px);
+    line-height: 0.95;
+    /* optical: pull the heavy caps back onto the text margin */
+    margin-left: -0.04em;
+    white-space: nowrap;
+  }
+
+  .hero__full {
+    margin-top: var(--space-16);
+    font-size: var(--fs-28);
+    font-weight: 700;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  .hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: var(--space-16);
+    font-family: var(--font-ui);
+    font-size: var(--fs-22);
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--muted);
+  }
+  .hero__meta span + span {
+    margin-left: var(--space-16);
+    padding-left: var(--space-16);
+    border-left: 1px solid var(--muted);
+  }
+
+  .hero__actions {
+    grid-column: 9 / span 4;
+    display: grid;
+    gap: var(--space-12);
+    padding-top: var(--space-24);
+  }
+
+  @media (max-width: 1080px) and (min-width: 861px) {
+    .hero__title {
+      grid-column: 1 / span 7;
+      padding-right: var(--space-24);
+    }
+    .hero__actions {
+      grid-column: 8 / span 5;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .hero__title {
+      grid-column: 1 / -1;
+      width: fit-content;
+      max-width: 100%;
+      margin-top: calc(-1 * var(--space-48));
+      padding: var(--space-16) var(--space-24) 0 0;
+    }
+    h1 {
+      /* 64px, easing down only below 390px so the title still fits a 360px screen */
+      font-size: clamp(56px, 16.4vw, 64px);
+    }
+    .hero__full {
+      margin-top: var(--space-12);
+      font-size: var(--fs-22);
+    }
+    .hero__meta {
+      display: block;
+      margin-top: var(--space-12);
+      font-size: var(--fs-18);
+    }
+    .hero__meta span {
+      display: block;
+    }
+    .hero__meta span + span {
+      margin-left: 0;
+      padding-left: 0;
+      border-left: 0;
+    }
+    .hero__actions {
+      grid-column: 1 / -1;
+      padding-top: var(--space-24);
+    }
+  }
+
+  /* Phones: the title is as wide as the screen, so there is no notch to cut; the block sits under the photo. */
+  @media (max-width: 560px) {
+    .hero__title {
+      width: auto;
+      margin-top: 0;
+      padding-right: 0;
+    }
+  }
+</style>

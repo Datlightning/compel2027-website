@@ -1,0 +1,77 @@
+---
+/** PortraitRow — members with photos: 4:5 portraits across cols 1–9, name and affiliation beneath. */
+import { href } from '../../lib/url';
+
+interface Props {
+  members: { name: string; affiliation: string; photo?: string }[];
+}
+const { members } = Astro.props;
+---
+
+<ul class="plain-list portraits">
+  {
+    members.map((m) => (
+      <li class="portrait">
+        <img src={href(m.photo!)} alt={`Portrait of ${m.name}`} width="800" height="1000" loading="lazy" decoding="async" />
+        <div class="portrait__text">
+          <p class="display h-28">{m.name}</p>
+          <p class="portrait__aff">{m.affiliation}</p>
+        </div>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  /* Three columns of the 12-col grid each, so the row ends at col 9. */
+  .portraits {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    row-gap: var(--space-32);
+  }
+  .portrait {
+    grid-column-end: span 3;
+  }
+  .portrait img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: center top;
+    background: var(--panel);
+  }
+  .portrait__text {
+    margin-top: var(--space-16);
+  }
+  .portrait__aff {
+    margin-top: var(--space-8);
+    font-family: var(--font-text);
+    font-size: var(--fs-16);
+    line-height: 1.4;
+    color: var(--muted);
+  }
+
+  @media (max-width: 860px) {
+    .portrait {
+      grid-column-end: span 4;
+    }
+  }
+  /* Phones: portrait at left, name beside it — a list, not a strip of tiny photos. */
+  @media (max-width: 560px) {
+    .portraits {
+      display: block;
+    }
+    .portrait {
+      display: grid;
+      grid-template-columns: 112px minmax(0, 1fr);
+      column-gap: var(--space-16);
+      align-items: end;
+    }
+    .portrait + .portrait {
+      margin-top: var(--space-24);
+    }
+    .portrait__text {
+      margin-top: 0;
+    }
+  }
+</style>

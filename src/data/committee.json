@@ -1,0 +1,118 @@
+{
+  "groups": [
+    {
+      "id": "general-chair",
+      "title": "General Chair",
+      "members": [
+        {
+          "name": "Prof. Alex J. Hanson",
+          "affiliation": "University of Texas at Austin",
+          "photo": "/images/committee-hanson.jpg"
+        }
+      ]
+    },
+    {
+      "id": "organizing-committee",
+      "title": "Organizing Committee",
+      "members": [
+        {
+          "name": "Prof. Alex Q. Huang",
+          "affiliation": "University of Texas at Austin",
+          "photo": "/images/committee-huang.jpg"
+        },
+        {
+          "name": "Prof. Brian Johnson",
+          "affiliation": "University of Texas at Austin",
+          "photo": "/images/committee-johnson.jpg"
+        },
+        {
+          "name": "Prof. Yicheng Zhu",
+          "affiliation": "University of Texas at Austin",
+          "photo": "/images/committee-zhu.jpg"
+        },
+        {
+          "name": "Elaine Ng",
+          "affiliation": "University of Texas at Austin"
+        },
+        {
+          "name": "Alyssa Brown",
+          "affiliation": "University of Texas at Austin"
+        },
+        {
+          "name": "Jakob Triemstra",
+          "affiliation": "University of Texas at Austin"
+        },
+        {
+          "name": "Yihao Wu",
+          "affiliation": "University of Texas at Austin"
+        },
+        {
+          "name": "Dr. Andrey Vulfovich",
+          "affiliation": "University of Texas at Austin"
+        },
+        {
+          "name": "Ajinkya Phanse",
+          "affiliation": "University of Texas at Austin"
+        },
+        {
+          "name": "Belle Howell",
+          "affiliation": "University of Texas at Austin"
+        },
+        {
+          "name": "Ike Ogbu",
+          "affiliation": "University of Texas at Austin"
+        },
+        {
+          "name": "Nathaniel Roe",
+          "affiliation": "University of Texas at Austin"
+        },
+        {
+          "name": "Deepta Gupta",
+          "affiliation": "University of Texas at Austin"
+        },
+        {
+          "name": "Param Shah",
+          "affiliation": "University of Texas at Austin"
+        },
+        {
+          "name": "Li-Chen Yu",
+          "affiliation": "University of Texas at Austin"
+        },
+        {
+          "name": "Dr. Pushkar Saraf",
+          "affiliation": "AWS-Annapurna Labs"
+        },
+        {
+          "name": "Dr. Soham Roy",
+          "affiliation": "AWS-Annapurna Labs"
+        },
+        {
+          "name": "Cuauhtémoc Macías",
+          "affiliation": "University of Texas at Austin"
+        },
+        {
+          "name": "Yayun Zhao",
+          "affiliation": "University of Texas at Austin"
+        },
+        {
+          "name": "Zach Miles",
+          "affiliation": "University of Texas at Austin"
+        },
+        {
+          "name": "Vishal Meena",
+          "affiliation": "University of Texas at Austin"
+        }
+      ]
+    },
+    {
+      "id": "tpc-chairs",
+      "title": "Technical Program Committee Chairs",
+      "members": []
+    },
+    {
+      "id": "tpc",
+      "title": "Technical Program Committee",
+      "members": []
+    }
+  ]
+}

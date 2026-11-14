@@ -1,0 +1,100 @@
+---
+/**
+ * Announcements — one item per file in src/content/announcements/*.md.
+ * Frontmatter: title, optional date (shown only when present), optional order
+ * (higher = nearer the top among undated items), optional buttonLabel + buttonHref.
+ * Newest first. The list scrolls inside its own 420px region.
+ */
+import { getCollection, render } from 'astro:content';
+import Button from '../Button.astro';
+
+const entries = (await getCollection('announcements')).sort((a, b) => {
+  const byDate = (b.data.date?.getTime() ?? 0) - (a.data.date?.getTime() ?? 0);
+  return byDate || (b.data.order ?? 0) - (a.data.order ?? 0);
+});
+const items = await Promise.all(entries.map(async (entry) => ({ entry, Content: (await render(entry)).Content })));
+const fmt = new Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeZone: 'UTC' });
+---
+
+{
+  items.length > 0 && (
+    <section class="ann" aria-labelledby="announcements-heading">
+      <h2 id="announcements-heading">Announcements</h2>
+      <div class="ann__scroll" role="region" aria-label="Announcements list, scrollable" tabindex="0">
+        {items.map(({ entry, Content }) => (
+          <article class="ann__item">
+            <h3 class="h-28">{entry.data.title}</h3>
+            {entry.data.date && (
+              <p class="ann__date">
+                <time datetime={entry.data.date.toISOString().slice(0, 10)}>{fmt.format(entry.data.date)}</time>
+              </p>
+            )}
+            <div class="prose ann__body">
+              <Content />
+            </div>
+            {entry.data.buttonLabel && entry.data.buttonHref && (
+              <p class="ann__action">
+                <Button href={entry.data.buttonHref} variant="secondary">
+                  {entry.data.buttonLabel}
+                </Button>
+              </p>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .ann__scroll {
+    margin-top: var(--space-24);
+    max-height: 420px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-color: var(--slate) var(--panel);
+    border-left: 3px solid var(--slate);
+    padding: 0 var(--space-32) 0 var(--space-32);
+  }
+  .ann__scroll:focus-visible {
+    outline-offset: 4px;
+  }
+  .ann__item {
+    padding-block: var(--space-24);
+  }
+  .ann__item:first-child {
+    padding-top: var(--space-4);
+  }
+  .ann__item + .ann__item {
+    border-top: 1px solid var(--rule);
+  }
+  .ann__item h3 {
+    max-width: 26em;
+  }
+  .ann__date {
+    margin-top: var(--space-8);
+    font-family: var(--font-ui);
+    font-size: var(--fs-16);
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .ann__body {
+    margin-top: var(--space-12);
+  }
+  .ann__body > :global(* + *) {
+    margin-top: var(--space-16);
+  }
+  .ann__action {
+    margin-top: var(--space-24);
+  }
+
+  @media (max-width: 860px) {
+    .ann__scroll {
+      margin-top: var(--space-16);
+      padding-inline: var(--space-16);
+    }
+    .ann__item {
+      padding-block: var(--space-24);
+    }
+  }
+</style>

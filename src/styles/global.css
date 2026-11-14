@@ -1,0 +1,691 @@
+/* ==========================================================================
+   COMPEL 2027 — global stylesheet. DESIGN.md is the authority for everything here.
+   Page authors: use the tokens and classes below; do not invent new colours,
+   sizes or spacing values. Page-specific layout goes in a scoped <style> in the
+   page/component and must be built from these tokens.
+
+   TOKENS (custom properties on :root)
+     Colour   --orange --orange-deep --slate --slate-rule --text --muted --rule --panel --paper
+     Fonts    --font-ui (Archivo)  --font-text (Source Serif 4)
+     Type     --fs-14 --fs-16 --fs-18 --fs-22 --fs-28 --fs-38 --fs-54 --fs-76
+     Space    --space-4 --space-8 --space-12 --space-16 --space-24 --space-32
+              --space-48 --space-72 --space-112
+     Layout   --max-width (1200px)  --gutter (24px)  --side (24px, 16px on phones)
+              --nav-h (56px, height of the sticky nav bar)
+     Breakpoint: phones/tablet layout is max-width 860px; desktop is min-width 861px.
+
+   LAYOUT
+     .container        centred 1200px column with side padding
+     .grid             12-column grid, 24px gutters. Children are full width by default
+                       (and always on <=860px). On desktop place them with:
+     .start-1 … .start-12   column the child starts at
+     .span-1  … .span-12    number of columns it spans      e.g. class="start-5 span-8"
+     .section          72px space above a page section (48px on phones)
+     .band             full-bleed flat --panel background band
+     .stack            vertical flow: 24px between direct children (.stack-sm 12px, .stack-lg 48px)
+
+   TYPE
+     h1 h2 h3          Archivo narrow 800 by default (h1 76/44, h2 38, h3 22)
+     .display          Archivo narrow 800 on any element
+     .h-76 .h-54 .h-38 .h-28 .h-22    heading sizes on any element
+     .ui               Archivo 16px/600 at normal width (labels, nav-like text)
+     .lede             serif 28px (22px on phones) running text
+     .muted            --muted colour
+     .tabular          tabular figures
+     .prose            wrapper for running/Markdown content: max 68ch, h2 38px with 48px
+                       above, h3 22px, paragraphs, lists with orange square bullets,
+                       links, tables
+     .bullets          orange 6px square hanging bullets on a <ul> outside .prose
+     .plain-list       <ul>/<ol> with no bullets or padding
+
+   COMPONENTS
+     .btn              base button (use <Button> component). Modifiers:
+       .btn--primary     orange fill, white text, 56px tall
+       .btn--secondary   1px slate outline; hover fills slate
+       .btn--outline-light  1px white outline, for slate surfaces
+       .btn--lg          72px tall, 22px/700 (home hero)
+       .btn--sm          44px tall, 16px/600 (nav bar)
+       .btn--block       full width
+     .table            table base: 1px rules, 56px rows. Add .table--band for the orange
+                       header band. Cells: .num for right-aligned tabular figures.
+     .rule             1px --rule line (<hr class="rule">)
+     .rule-strong      3px --slate line   (.rule-strong--orange for orange)
+     .file-row         file download row (use <FileDownload> component)
+     .coming-soon      "Details coming soon." line (use <ComingSoon> component)
+     .on-slate         put on any slate-background block: white text, white focus rings
+
+   ACCESSIBILITY
+     .skip-link        skip-to-content link (already in BaseLayout)
+     .visually-hidden  screen-reader-only text
+   ========================================================================== */
+
+:root {
+  --orange: #bf5700;
+  --orange-deep: #9c4700;
+  --slate: #1d2b33;
+  --slate-rule: #3d4d56; /* the "1px lighter rule" used inside slate surfaces */
+  --text: #1a2228;
+  --muted: #56646c;
+  --rule: #c8d0d3;
+  --panel: #eef1f1;
+  --paper: #ffffff;
+
+  --font-ui: 'Archivo Variable', 'Archivo', 'Arial Narrow', Arial, sans-serif;
+  --font-text: 'Source Serif 4 Variable', 'Source Serif 4', Georgia, 'Times New Roman', serif;
+
+  --fs-14: 0.875rem;
+  --fs-16: 1rem;
+  --fs-18: 1.125rem;
+  --fs-22: 1.375rem;
+  --fs-28: 1.75rem;
+  --fs-38: 2.375rem;
+  --fs-54: 3.375rem;
+  --fs-76: 4.75rem;
+
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+  --space-72: 72px;
+  --space-112: 112px;
+
+  --max-width: 1200px;
+  --gutter: 24px;
+  --side: 24px;
+  --nav-h: 56px;
+}
+
+@media (max-width: 860px) {
+  :root {
+    --side: 16px;
+  }
+}
+
+/* ---------- Reset and base ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--nav-h) + var(--space-24));
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  color: var(--text);
+  font-family: var(--font-text);
+  font-size: var(--fs-18);
+  line-height: 1.6;
+  overflow-wrap: break-word;
+}
+
+main {
+  flex: 1 0 auto;
+  display: block;
+}
+
+@media (max-width: 860px) {
+  body {
+    font-size: 1.0625rem; /* 17px on phones */
+  }
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+p,
+ul,
+ol,
+dl,
+figure,
+blockquote,
+table {
+  margin: 0;
+}
+
+b,
+strong {
+  font-weight: 700;
+}
+
+hr {
+  border: 0;
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* ---------- Headings ---------- */
+
+h1,
+h2,
+h3,
+h4,
+.display {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-variation-settings: 'wdth' 75;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--slate);
+}
+
+/* Source content often has <strong> inside headings: render once, not doubly bold. */
+h1 strong,
+h2 strong,
+h3 strong,
+h4 strong,
+h1 b,
+h2 b,
+h3 b,
+h4 b {
+  font-weight: inherit;
+}
+
+h1,
+.h-76 {
+  font-size: var(--fs-76);
+  line-height: 0.95;
+}
+h2,
+.h-38 {
+  font-size: var(--fs-38);
+}
+h3,
+.h-22 {
+  font-size: var(--fs-22);
+  line-height: 1.05;
+}
+h4 {
+  font-size: var(--fs-18);
+  line-height: 1.05;
+}
+.h-54 {
+  font-size: var(--fs-54);
+}
+.h-28 {
+  font-size: var(--fs-28);
+  line-height: 1.05;
+}
+
+@media (max-width: 860px) {
+  h1,
+  .h-76 {
+    font-size: 2.75rem; /* 44px */
+  }
+  .h-54 {
+    font-size: var(--fs-38);
+  }
+  h2,
+  .h-38 {
+    font-size: var(--fs-28);
+  }
+}
+
+.ui {
+  font-family: var(--font-ui);
+  font-size: var(--fs-16);
+  font-weight: 600;
+  font-stretch: 100%;
+  line-height: 1.3;
+}
+
+.lede {
+  font-size: var(--fs-28);
+  line-height: 1.4;
+}
+@media (max-width: 860px) {
+  .lede {
+    font-size: var(--fs-22);
+  }
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Links ---------- */
+
+a {
+  color: var(--orange-deep);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+a:hover {
+  color: var(--slate);
+  text-decoration-thickness: 2px;
+}
+
+/* ---------- Focus ---------- */
+
+:focus {
+  outline: none;
+}
+:focus-visible {
+  outline: 3px solid var(--slate);
+  outline-offset: 2px;
+}
+.on-slate :focus-visible,
+.on-slate:focus-visible {
+  outline-color: #ffffff;
+}
+
+/* ---------- Accessibility helpers ---------- */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--side);
+  top: var(--space-8);
+  z-index: 100;
+  padding: var(--space-12) var(--space-16);
+  background: var(--paper);
+  color: var(--slate);
+  border: 3px solid var(--slate);
+  font-family: var(--font-ui);
+  font-size: var(--fs-16);
+  font-weight: 600;
+  transform: translateY(-200%);
+}
+.skip-link:focus {
+  transform: none;
+}
+
+/* ---------- Layout ---------- */
+
+.container {
+  width: 100%;
+  max-width: calc(var(--max-width) + 2 * var(--side));
+  margin-inline: auto;
+  padding-inline: var(--side);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+}
+.grid > * {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+@media (min-width: 861px) {
+  .span-1 { grid-column-end: span 1; }
+  .span-2 { grid-column-end: span 2; }
+  .span-3 { grid-column-end: span 3; }
+  .span-4 { grid-column-end: span 4; }
+  .span-5 { grid-column-end: span 5; }
+  .span-6 { grid-column-end: span 6; }
+  .span-7 { grid-column-end: span 7; }
+  .span-8 { grid-column-end: span 8; }
+  .span-9 { grid-column-end: span 9; }
+  .span-10 { grid-column-end: span 10; }
+  .span-11 { grid-column-end: span 11; }
+  .span-12 { grid-column-end: span 12; }
+  .start-1 { grid-column-start: 1; }
+  .start-2 { grid-column-start: 2; }
+  .start-3 { grid-column-start: 3; }
+  .start-4 { grid-column-start: 4; }
+  .start-5 { grid-column-start: 5; }
+  .start-6 { grid-column-start: 6; }
+  .start-7 { grid-column-start: 7; }
+  .start-8 { grid-column-start: 8; }
+  .start-9 { grid-column-start: 9; }
+  .start-10 { grid-column-start: 10; }
+  .start-11 { grid-column-start: 11; }
+  .start-12 { grid-column-start: 12; }
+}
+
+.section {
+  margin-top: var(--space-72);
+}
+@media (max-width: 860px) {
+  .section {
+    margin-top: var(--space-48);
+  }
+}
+
+.band {
+  background: var(--panel);
+}
+
+.stack > * + * {
+  margin-top: var(--space-24);
+}
+.stack-sm > * + * {
+  margin-top: var(--space-12);
+}
+.stack-lg > * + * {
+  margin-top: var(--space-48);
+}
+
+.on-slate {
+  background: var(--slate);
+  color: #ffffff;
+}
+
+/* ---------- Rules ---------- */
+
+.rule {
+  height: 0;
+  border-top: 1px solid var(--rule);
+}
+.rule-strong {
+  height: 0;
+  border-top: 3px solid var(--slate);
+}
+.rule-strong--orange {
+  border-top-color: var(--orange);
+}
+
+/* ---------- Lists ---------- */
+
+.plain-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.bullets,
+.prose ul {
+  list-style: none;
+  padding: 0;
+}
+.bullets {
+  margin: 0;
+}
+/* Zero-specificity reset so the `.prose > * + *` flow rule can set the top margin. */
+:where(.prose) ul {
+  margin: 0;
+}
+.bullets > li,
+.prose ul > li {
+  position: relative;
+  padding-left: var(--space-24);
+}
+.bullets > li + li,
+.prose ul > li + li,
+.prose ol > li + li {
+  margin-top: var(--space-12);
+}
+.bullets > li::before,
+.prose ul > li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: calc(0.8em - 3px); /* centre of the first line (line-height 1.6) */
+  width: 6px;
+  height: 6px;
+  background: var(--orange);
+}
+.prose ol {
+  padding-left: var(--space-24);
+}
+.prose li > ul,
+.prose li > ol {
+  margin-top: var(--space-12);
+}
+
+/* ---------- Prose (running / Markdown content) ---------- */
+
+.prose {
+  max-width: 68ch;
+}
+.prose > * + * {
+  margin-top: var(--space-24);
+}
+.prose > h2 {
+  margin-top: var(--space-48);
+}
+.prose > h3 {
+  margin-top: var(--space-32);
+}
+.prose > h2 + *,
+.prose > h3 + * {
+  margin-top: var(--space-16);
+}
+.prose > :first-child {
+  margin-top: 0;
+}
+.prose img {
+  width: 100%;
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: var(--space-8) var(--space-24);
+  border: 1px solid transparent;
+  border-radius: 2px;
+  font-family: var(--font-ui);
+  font-size: var(--fs-18);
+  font-weight: 700;
+  font-stretch: 100%;
+  font-variation-settings: 'wdth' 100;
+  line-height: 1.15;
+  letter-spacing: 0;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn:hover {
+  text-decoration: none;
+}
+
+.btn--primary {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: #ffffff;
+}
+.btn--primary:hover {
+  background: var(--orange-deep);
+  border-color: var(--orange-deep);
+  color: #ffffff;
+}
+
+.btn--secondary {
+  background: transparent;
+  border-color: var(--slate);
+  color: var(--slate);
+}
+.btn--secondary:hover {
+  background: var(--slate);
+  color: #ffffff;
+}
+
+.btn--outline-light {
+  background: transparent;
+  border-color: #ffffff;
+  color: #ffffff;
+}
+.btn--outline-light:hover {
+  background: #ffffff;
+  color: var(--slate);
+}
+
+.btn--lg {
+  min-height: 72px;
+  padding-inline: var(--space-32);
+  font-size: var(--fs-22);
+}
+.btn--sm {
+  min-height: 44px;
+  padding: var(--space-4) var(--space-16);
+  font-size: var(--fs-16);
+  font-weight: 600;
+}
+.btn--block {
+  display: flex;
+  width: 100%;
+}
+
+/* ---------- Tables ---------- */
+
+.table,
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-ui);
+  font-size: var(--fs-18);
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+.table caption,
+.prose table caption {
+  caption-side: top;
+  text-align: left;
+  padding-bottom: var(--space-24);
+  font-family: var(--font-ui);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-variation-settings: 'wdth' 75;
+  font-size: var(--fs-38);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--slate);
+}
+.table th,
+.table td,
+.prose table th,
+.prose table td {
+  height: 56px;
+  padding: var(--space-12) var(--space-16);
+  border-bottom: 1px solid var(--rule);
+  vertical-align: middle;
+  text-align: left;
+}
+.table th,
+.prose table th {
+  font-weight: 600;
+}
+.table thead th,
+.prose table thead th {
+  font-weight: 700;
+  color: var(--slate);
+  border-bottom: 3px solid var(--slate);
+}
+table.table--band thead th,
+.prose table.table--band thead th {
+  background: var(--orange);
+  color: #ffffff;
+  border-bottom: 0;
+}
+.table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 860px) {
+  .table caption,
+  .prose table caption {
+    font-size: var(--fs-28);
+    padding-bottom: var(--space-16);
+  }
+  .table th,
+  .table td,
+  .prose table th,
+  .prose table td {
+    padding-inline: var(--space-12);
+  }
+}
+
+/* ---------- File download row ---------- */
+
+.file-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12) var(--space-24);
+  padding-block: var(--space-16);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-ui);
+}
+.file-row + .file-row {
+  border-top: 0;
+  margin-top: 0;
+}
+.file-row__text {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+.file-row__name {
+  display: block;
+  font-size: var(--fs-18);
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--slate);
+}
+.file-row__meta {
+  display: block;
+  margin-top: var(--space-4);
+  font-size: var(--fs-16);
+  color: var(--muted);
+}
+
+/* ---------- Coming soon ---------- */
+
+.coming-soon {
+  font-family: var(--font-text);
+  font-size: var(--fs-18);
+}
+
+/* ---------- Motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

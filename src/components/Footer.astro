@@ -1,0 +1,62 @@
+---
+import site from '../data/site.json';
+---
+
+<footer class="site-footer on-slate">
+  <div class="container grid">
+    <div class="span-5">
+      <p class="site-footer__name">{site.name}</p>
+      <p><a href={`mailto:${site.email}`}>{site.email}</a></p>
+    </div>
+    <address class="start-6 span-4">
+      {site.address.map((line) => <span>{line}</span>)}
+    </address>
+    <div class="start-10 span-3">
+      <p class="tabular">{site.dates}</p>
+      <p><a href={site.pels.url}>{site.pels.label}</a></p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--space-112);
+    padding-block: var(--space-72);
+    font-family: var(--font-ui);
+    font-size: var(--fs-16);
+    line-height: 1.5;
+  }
+  .site-footer .grid {
+    row-gap: var(--space-32);
+  }
+  .site-footer__name {
+    font-weight: 700;
+  }
+  .site-footer p + p {
+    margin-top: var(--space-8);
+  }
+  address {
+    font-style: normal;
+  }
+  address span {
+    display: block;
+  }
+  .site-footer a {
+    display: inline-block;
+    padding-block: var(--space-12);
+    margin-block: calc(-1 * var(--space-12));
+    color: #ffffff;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  .site-footer a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+  }
+  @media (max-width: 860px) {
+    .site-footer {
+      margin-top: var(--space-72);
+      padding-block: var(--space-48);
+    }
+  }
+</style>

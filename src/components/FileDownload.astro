@@ -1,0 +1,50 @@
+---
+/**
+ * <FileDownload name="IEEE COMPEL 2027 Call for Papers Flyer.pdf"
+ *               file="/files/IEEE-COMPEL-2027-Call-for-Papers-Flyer.pdf" />
+ *
+ * Props
+ *   name   required. File name shown to the reader.
+ *   file   required. Path under public/, e.g. "/files/x.pdf" (run through href()).
+ *   type   label for the file type; default is the upper-cased extension ("PDF").
+ *   size   optional override, e.g. "1.2 MB". By default the size is read from
+ *          public/<file> at build time and omitted if the file is not there yet.
+ */
+import { statSync } from 'node:fs';
+import { join } from 'node:path';
+import { href } from '../lib/url';
+
+interface Props {
+  name: string;
+  file: string;
+  type?: string;
+  size?: string;
+}
+
+const { name, file } = Astro.props;
+const type = Astro.props.type ?? (file.split('.').pop() ?? '').toUpperCase();
+
+function formatBytes(bytes: number): string {
+  if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+}
+
+let size = Astro.props.size;
+if (!size) {
+  try {
+    size = formatBytes(statSync(join(process.cwd(), 'public', file)).size);
+  } catch {
+    size = undefined;
+  }
+}
+---
+
+<div class="file-row">
+  <div class="file-row__text">
+    <span class="file-row__name">{name}</span>
+    <span class="file-row__meta">{[type, size].filter(Boolean).join(', ')}</span>
+  </div>
+  <a class="btn btn--secondary" href={href(file)} download
+    >Download<span class="visually-hidden"> {name}</span></a
+  >
+</div>

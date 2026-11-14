@@ -1,0 +1,69 @@
+---
+/**
+ * Home. Layout per DESIGN.md "Home":
+ *   hero photo + title block + two calls to action, the PWM line, then
+ *   desktop: dates (cols 1-7) beside welcome (cols 9-12), announcements (cols 1-9) below;
+ *   phones:  dates, announcements, welcome.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/home/Hero.astro';
+import Waveform from '../components/home/Waveform.astro';
+import DatesTable from '../components/home/DatesTable.astro';
+import Welcome from '../components/home/Welcome.astro';
+import Announcements from '../components/home/Announcements.astro';
+import Sponsors from '../components/home/Sponsors.astro';
+---
+
+<BaseLayout>
+  <Hero />
+  <Waveform />
+  <div class="container section home-grid">
+    <div class="home-dates"><DatesTable /></div>
+    <div class="home-announcements"><Announcements /></div>
+    <div class="home-welcome"><Welcome /></div>
+  </div>
+  <Sponsors />
+  <div class="home-end"></div>
+</BaseLayout>
+
+<style>
+  .home-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    row-gap: var(--space-72);
+  }
+  .home-grid > div {
+    grid-column: 1 / -1;
+    min-width: 0;
+  }
+  .home-end {
+    height: var(--space-112);
+  }
+
+  @media (min-width: 861px) {
+    .home-grid > .home-dates {
+      grid-column: 1 / span 7;
+      grid-row: 1;
+    }
+    .home-grid > .home-welcome {
+      grid-column: 9 / span 4;
+      grid-row: 1;
+      /* line the welcome heading up with the table's header band, below the caption */
+      padding-top: calc(var(--fs-38) + var(--space-24));
+    }
+    .home-grid > .home-announcements {
+      grid-column: 1 / span 9;
+      grid-row: 2;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .home-grid {
+      row-gap: var(--space-48);
+    }
+    .home-end {
+      height: var(--space-72);
+    }
+  }
+</style>

@@ -1,0 +1,99 @@
+---
+/**
+ * The site's one decorative element: a sinusoidal-PWM gate signal drawn as a single line.
+ *
+ * Natural sampling: a triangular carrier is compared with a sine reference and the output
+ * is high wherever the reference is above the carrier. One period of the reference spans
+ * the viewport, so the pulses breathe narrow -> wide -> narrow. The crossing instants are
+ * solved numerically at build time. Two versions are generated (40 carrier periods for
+ * wide screens, 20 for phones, where 40 would smear) and CSS shows one.
+ */
+const W = 1440; // viewBox width; the SVG is stretched to the viewport
+const H = 48;
+const HIGH = 5;
+const LOW = H - 5;
+const M = 0.7; // modulation index
+
+function spwm(pulses: number): string {
+  const ref = (t: number) => -M * Math.cos((2 * Math.PI * t) / pulses); // t in carrier periods
+  // root of f on [a, b] by bisection (f changes sign exactly once on each carrier edge)
+  const solve = (f: (t: number) => number, a: number, b: number) => {
+    let fa = f(a);
+    for (let i = 0; i < 48; i++) {
+      const m = (a + b) / 2;
+      const fm = f(m);
+      if (fa * fm <= 0) b = m;
+      else (a = m), (fa = fm);
+    }
+    return (a + b) / 2;
+  };
+  const x = (t: number) => ((t / pulses) * W).toFixed(2);
+  const pts: string[] = [`0,${LOW}`];
+  for (let k = 0; k < pulses; k++) {
+    // carrier over period k: +1 at the edges, -1 at the centre
+    const falling = (t: number) => ref(t) - (1 - 4 * (t - k));
+    const rising = (t: number) => ref(t) - (4 * (t - k) - 3);
+    const on = x(solve(falling, k, k + 0.5));
+    const off = x(solve(rising, k + 0.5, k + 1));
+    pts.push(`${on},${LOW}`, `${on},${HIGH}`, `${off},${HIGH}`, `${off},${LOW}`);
+  }
+  pts.push(`${W},${LOW}`);
+  return pts.join(' ');
+}
+
+const wide = spwm(40);
+const narrow = spwm(20);
+---
+
+<svg
+  class="waveform"
+  viewBox={`0 0 ${W} ${H}`}
+  preserveAspectRatio="none"
+  aria-hidden="true"
+  focusable="false"
+>
+  <polyline class="waveform__line waveform__line--wide" points={wide} pathLength="1"></polyline>
+  <polyline class="waveform__line waveform__line--narrow" points={narrow} pathLength="1"></polyline>
+</svg>
+
+<style>
+  .waveform {
+    display: block;
+    width: 100%;
+    height: 48px;
+    margin-top: var(--space-48);
+  }
+  .waveform__line {
+    fill: none;
+    stroke: var(--orange);
+    stroke-width: 2px;
+    stroke-linejoin: miter;
+    vector-effect: non-scaling-stroke;
+  }
+  .waveform__line--narrow {
+    display: none;
+  }
+  @media (max-width: 860px) {
+    .waveform__line--wide {
+      display: none;
+    }
+    .waveform__line--narrow {
+      display: inline;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .waveform__line {
+      stroke-dasharray: 1;
+      animation: waveform-draw 1.4s linear both;
+    }
+  }
+  @keyframes waveform-draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+</style>

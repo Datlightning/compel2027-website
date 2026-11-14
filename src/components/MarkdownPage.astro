@@ -1,0 +1,105 @@
+---
+/**
+ * <MarkdownPage slug="tutorials" /> — a whole inner page from src/content/pages/<slug>.md.
+ *
+ * The page title comes from the file's `title`; the text is ordinary Markdown. Three
+ * conventions let editors place components without leaving Markdown:
+ *
+ *   [Download: File name.pdf](/files/file-name.pdf)   a link alone on its own line whose text
+ *                                                     starts with "Download:" -> file download row
+ *   [Button: Label](/some-page/)                      a link alone on its own line whose text
+ *                                                     starts with "Button:" -> button (orange when it
+ *                                                     leaves the site, outlined for a page of this site)
+ *   (site:submissionUrl) / (site:registrationUrl)     as a link target -> the URL of that name in
+ *                                                     src/data/site.json
+ *
+ * A file with no text renders "Details coming soon."
+ *
+ * Props
+ *   slug   required. File name in src/content/pages without ".md".
+ *   lede   true sets the text large (Contact).
+ */
+import { getEntry } from 'astro:content';
+import PageLayout from '../layouts/PageLayout.astro';
+import Button from './Button.astro';
+import FileDownload from './FileDownload.astro';
+import site from '../data/site.json';
+import { isExternal } from '../lib/url';
+
+interface Props {
+  slug: string;
+  lede?: boolean;
+}
+
+const { slug, lede = false } = Astro.props;
+const entry = await getEntry('pages', slug);
+if (!entry) throw new Error(`src/content/pages/${slug}.md is missing`);
+
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const unbase = (url: string) => (base && url.startsWith(base + '/') ? url.slice(base.length) : url);
+const decode = (text: string) =>
+  text
+    .replace(/&#x26;|&amp;/g, '&')
+    .replace(/&#x3C;|&lt;/g, '<')
+    .replace(/&#x3E;|&gt;/g, '>')
+    .replace(/&#x22;|&quot;/g, '"')
+    .replace(/&#x27;|&#39;/g, "'");
+
+// site:<key> link targets -> the value in site.json
+const html = (entry.rendered?.html ?? '')
+  .replace(/<!--[\s\S]*?-->/g, '')
+  .replace(/href="site:([A-Za-z]+)"/g, (_match, key: string) => {
+    const value = (site as Record<string, unknown>)[key];
+    if (typeof value !== 'string') throw new Error(`${slug}.md links to site:${key}, which is not in src/data/site.json`);
+    return `href="${value}"`;
+  });
+
+type Part =
+  | { kind: 'html'; html: string }
+  | { kind: 'file'; name: string; file: string }
+  | { kind: 'button'; label: string; href: string };
+
+// Split on paragraphs that hold nothing but a "Download: …" or "Button: …" link.
+const marker = /<p>\s*<a href="([^"]+)">\s*(Download|Button):\s*([^<]+?)\s*<\/a>\s*<\/p>/g;
+const parts: Part[] = [];
+let cursor = 0;
+for (const match of html.matchAll(marker)) {
+  const before = html.slice(cursor, match.index).trim();
+  if (before) parts.push({ kind: 'html', html: before });
+  const target = unbase(decode(match[1]));
+  const text = decode(match[3]);
+  parts.push(match[2] === 'Download' ? { kind: 'file', name: text, file: target } : { kind: 'button', label: text, href: target });
+  cursor = match.index + match[0].length;
+}
+const rest = html.slice(cursor).trim();
+if (rest) parts.push({ kind: 'html', html: rest });
+---
+
+<PageLayout title={entry.data.title} comingSoon={parts.length === 0}>
+  <div class:list={['prose', 'md-page', lede && 'lede']}>
+    {
+      parts.map((part) =>
+        part.kind === 'html' ? (
+          <Fragment set:html={part.html} />
+        ) : part.kind === 'file' ? (
+          <FileDownload name={part.name} file={part.file} />
+        ) : (
+          <p class="page-action">
+            <Button href={part.href} variant={isExternal(part.href) ? 'primary' : 'secondary'}>
+              {part.label}
+            </Button>
+          </p>
+        )
+      )
+    }
+  </div>
+</PageLayout>
+
+<style is:global>
+  /* Keep an email address on one line on narrow phones. */
+  @media (max-width: 420px) {
+    .md-page.lede a[href^='mailto:'] {
+      font-size: var(--fs-18);
+    }
+  }
+</style>

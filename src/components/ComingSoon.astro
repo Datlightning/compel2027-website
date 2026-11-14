@@ -1,0 +1,9 @@
+---
+/** <ComingSoon /> — the one serif line used by empty pages. Optional prop: text. */
+interface Props {
+  text?: string;
+}
+const { text = 'Details coming soon.' } = Astro.props;
+---
+
+<p class="coming-soon">{text}</p>

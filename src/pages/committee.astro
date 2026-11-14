@@ -1,0 +1,62 @@
+---
+/**
+ * Committee — driven entirely by src/data/committee.json.
+ *   - a group with no members renders nothing (not even its heading);
+ *   - the group with id "general-chair" renders as the feature row;
+ *   - in any other group, members with a "photo" become portraits and the rest a name list,
+ *     both in the order they appear in the file.
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import ChairFeature from '../components/committee/ChairFeature.astro';
+import PortraitRow from '../components/committee/PortraitRow.astro';
+import NameList from '../components/committee/NameList.astro';
+import data from '../data/committee.json';
+
+type Member = { name: string; affiliation: string; photo?: string };
+type Group = { id: string; title: string; members: Member[] };
+
+const groups = (data.groups as Group[]).filter((g) => g.members.length > 0);
+---
+
+<PageLayout
+  title="Committee"
+  description="The general chair and organizing committee of COMPEL 2027 at the University of Texas at Austin."
+  wide
+>
+  {
+    groups.map((group) => {
+      const withPhoto = group.members.filter((m) => m.photo);
+      const withoutPhoto = group.members.filter((m) => !m.photo);
+      return (
+        <section class="group" aria-labelledby={`group-${group.id}`}>
+          <h2 id={`group-${group.id}`}>{group.title}</h2>
+          {group.id === 'general-chair' ? (
+            group.members.map((m) => <ChairFeature member={m} />)
+          ) : (
+            <>
+              {withPhoto.length > 0 && <PortraitRow members={withPhoto} />}
+              {withoutPhoto.length > 0 && <NameList members={withoutPhoto} />}
+            </>
+          )}
+        </section>
+      );
+    })
+  }
+</PageLayout>
+
+<style>
+  .group + .group {
+    margin-top: var(--space-72);
+  }
+  .group > :global(* + *) {
+    margin-top: var(--space-32);
+  }
+  .group > :global(.names) {
+    margin-top: var(--space-48);
+  }
+  @media (max-width: 860px) {
+    .group + .group {
+      margin-top: var(--space-48);
+    }
+  }
+</style>

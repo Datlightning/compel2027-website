@@ -1,0 +1,71 @@
+name: Fetch real assets
+
+# Run by hand (Actions tab -> Fetch real assets -> Run workflow). Downloads the real
+# images and PDFs from Fourwaves and commits them over the generated placeholders.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download assets into assets-src/
+        run: bash fetch-assets.sh
+
+      - name: Copy images (long side capped at 1600px)
+        run: |
+          mkdir -p public/images
+          if [ -s assets-src/logo-banner.png ]; then
+            cp assets-src/logo-banner.png public/images/logo-banner.png
+            echo "copied logo-banner.png"
+          fi
+          for name in venue-welch venue-eer venue-pickle committee-hanson committee-huang committee-johnson committee-zhu; do
+            src="assets-src/$name.jpg"
+            if [ -s "$src" ] && file -b --mime-type "$src" | grep -q '^image/'; then
+              convert "$src" -auto-orient -resize '1600x1600>' -strip -quality 85 "public/images/$name.jpg"
+              echo "copied $name.jpg"
+            else
+              echo "skipped $name.jpg (not downloaded)"
+            fi
+          done
+
+      - name: Make the hero from the top band of header-current.png
+        run: |
+          src=assets-src/header-current.png
+          if [ -s "$src" ] && file -b --mime-type "$src" | grep -q '^image/'; then
+            # photo region only: x from 20% to 100% of the width, y from 0 to 38% of the height
+            convert "$src" -gravity NorthEast -crop '80%x38%+0+0' +repage -strip -quality 88 public/images/hero-campus.jpg
+            echo "created hero-campus.jpg"
+          else
+            echo "skipped hero-campus.jpg (header-current.png not downloaded)"
+          fi
+
+      - name: Copy PDFs (only real PDFs)
+        run: |
+          mkdir -p public/files
+          for name in IEEE-COMPEL-2027-Call-for-Papers-Flyer.pdf digest_sample_compel_2027.pdf; do
+            src="assets-src/$name"
+            if [ -s "$src" ] && file -b "$src" | grep -q '^PDF document'; then
+              cp "$src" "public/files/$name"
+              echo "copied $name"
+            else
+              echo "::warning::$name did not download as a PDF; add it to public/files/ by hand"
+            fi
+          done
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/images public/files
+          if git diff --cached --quiet; then
+            echo "Nothing changed."
+          else
+            git commit -m "Replace placeholder assets with the real files"
+            git push
+          fi

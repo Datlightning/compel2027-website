@@ -1,0 +1,25 @@
+---
+/** Welcome block (SPEC 5.1). Text is verbatim from the source site. */
+import site from '../../data/site.json';
+---
+
+<section class="welcome" aria-labelledby="welcome-heading">
+  <h2 id="welcome-heading" class="h-28">Welcome to COMPEL 2027!</h2>
+  <p>
+    The <a href={site.pels.url}>IEEE Power Electronics Society</a> announces the 28th Annual Workshop on Control and
+    Modeling for Power Electronics, IEEE COMPEL 2027. This workshop brings together researchers, engineers and students
+    from academia and industry for an interactive discussion on the latest advances in modeling, simulation, analysis
+    and control of power electronic devices, circuits and systems.
+  </p>
+</section>
+
+<style>
+  h2 {
+    font-size: var(--fs-28);
+    line-height: 1.05;
+  }
+  p {
+    margin-top: var(--space-16);
+    max-width: 68ch;
+  }
+</style>

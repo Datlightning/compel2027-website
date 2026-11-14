@@ -1,0 +1,440 @@
+---
+/**
+ * Header — white logo strip, then the sticky slate nav bar. No props; everything comes
+ * from src/data/nav.json and src/data/site.json. Rendered by BaseLayout on every page.
+ *
+ * Without JavaScript: group triggers are plain links to the group's first page and the
+ * dropdowns open on hover / keyboard focus; the phone "Menu" link opens the panel via :target.
+ */
+import nav from '../data/nav.json';
+import site from '../data/site.json';
+import { href, routeOf } from '../lib/url';
+
+type Child = { label: string; path: string };
+type Item = { label: string; path?: string; id?: string; children?: Child[] };
+
+const route = routeOf(Astro.url.pathname);
+const items = nav.items as Item[];
+const siteUrls = site as unknown as Record<string, string>;
+---
+
+<header class="logo-strip">
+  <div class="container">
+    <a class="logo-strip__link" href={href('/')}>
+      <img
+        src={href(site.logo.src)}
+        alt={`${site.name} home. ${site.logo.alt}`}
+        width={site.logo.width}
+        height={site.logo.height}
+      />
+    </a>
+  </div>
+</header>
+
+<nav class="site-nav on-slate" aria-label="Main" data-site-nav>
+  <div class="container site-nav__inner">
+    <a class="site-nav__menu-btn" href="#site-menu" data-menu-btn aria-controls="site-menu">Menu</a>
+
+    <ul class="site-nav__list plain-list" id="site-menu">
+      {
+        items.map((item) =>
+          item.children ? (
+            <li
+              class:list={['nav-item', 'nav-item--group', item.children.some((c) => c.path === route) && 'is-current']}
+              data-nav-group
+            >
+              <a
+                class="nav-link nav-trigger"
+                href={href(item.children[0].path)}
+                data-nav-trigger
+                aria-controls={`nav-${item.id}`}
+              >
+                {item.label}
+              </a>
+              <span class="nav-group-label" id={`nav-${item.id}-label`}>
+                {item.label}
+              </span>
+              <ul class="nav-dropdown plain-list" id={`nav-${item.id}`} aria-labelledby={`nav-${item.id}-label`}>
+                {item.children.map((child) => (
+                  <li>
+                    <a href={href(child.path)} aria-current={child.path === route ? 'page' : undefined}>
+                      {child.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ) : (
+            <li class:list={['nav-item', item.path === route && 'is-current']}>
+              <a class="nav-link" href={href(item.path!)} aria-current={item.path === route ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ),
+        )
+      }
+    </ul>
+
+    <div class="site-nav__cta">
+      {
+        nav.cta.map((cta) => (
+          <a
+            class:list={['btn', 'btn--sm', cta.variant === 'primary' ? 'btn--primary' : 'btn--outline-light']}
+            href={siteUrls[cta.siteKey]}
+          >
+            {cta.label}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</nav>
+
+<style>
+  /* ---------- Logo strip ---------- */
+  .logo-strip {
+    background: var(--paper);
+  }
+  .logo-strip__link {
+    display: inline-block;
+    vertical-align: top;
+    padding-block: var(--space-12);
+  }
+  .logo-strip img {
+    height: 72px;
+    width: auto;
+  }
+
+  /* ---------- Nav bar ---------- */
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    font-family: var(--font-ui);
+    font-size: var(--fs-16);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .site-nav__inner {
+    display: flex;
+    align-items: stretch;
+    min-height: var(--nav-h);
+  }
+  .site-nav__list {
+    display: flex;
+    align-items: stretch;
+    margin-left: calc(-1 * var(--space-16));
+  }
+  .nav-item {
+    position: relative;
+    display: flex;
+  }
+  .nav-link,
+  .site-nav__menu-btn {
+    display: flex;
+    align-items: center;
+    padding-inline: var(--space-16);
+    border-top: 3px solid transparent;
+    border-bottom: 3px solid transparent; /* keeps the label optically centred */
+    color: #ffffff;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .nav-link:hover,
+  .site-nav__menu-btn:hover,
+  .nav-item--group.is-open > .nav-link {
+    color: #ffffff;
+    background: var(--slate-rule);
+  }
+  .nav-item.is-current > .nav-link {
+    border-top-color: var(--orange);
+  }
+  .nav-link:focus-visible,
+  .site-nav__menu-btn:focus-visible,
+  .nav-dropdown a:focus-visible {
+    outline-offset: -3px;
+  }
+  .nav-group-label,
+  .site-nav__menu-btn {
+    display: none;
+  }
+
+  /* Dropdown panel */
+  .nav-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 240px;
+    background: var(--slate);
+    border-top: 1px solid var(--slate-rule);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition:
+      opacity 120ms ease,
+      transform 120ms ease,
+      visibility 0s linear 120ms;
+  }
+  .nav-dropdown li + li {
+    border-top: 1px solid var(--slate-rule);
+  }
+  .nav-dropdown a {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: var(--space-12) var(--space-16);
+    border-left: 3px solid transparent;
+    color: #ffffff;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .nav-dropdown a:hover {
+    background: var(--slate-rule);
+  }
+  .nav-dropdown a[aria-current='page'] {
+    border-left-color: var(--orange);
+  }
+  /* open: via .is-open when JS runs; via hover/focus when it does not */
+  .nav-item--group.is-open > .nav-dropdown,
+  :global(html:not(.js)) .nav-item--group:hover > .nav-dropdown,
+  :global(html:not(.js)) .nav-item--group:focus-within > .nav-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 0s;
+  }
+
+  /* Calls to action */
+  .site-nav__cta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+    margin-left: auto;
+    padding-block: 6px;
+  }
+  .site-nav__cta .btn {
+    white-space: nowrap;
+  }
+
+  /* ---------- Under 860px: Menu button + full-width panel ---------- */
+  @media (max-width: 860px) {
+    .logo-strip__link {
+      padding-block: var(--space-8);
+    }
+    .logo-strip img {
+      height: 48px;
+    }
+    .site-nav__inner {
+      flex-wrap: wrap;
+      column-gap: var(--space-8);
+    }
+    .site-nav__menu-btn {
+      display: flex;
+      min-height: var(--nav-h);
+      margin-left: calc(-1 * var(--space-16));
+    }
+    .site-nav__cta {
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .site-nav__list {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      margin: 0;
+      padding: 0 var(--side) var(--space-24);
+      max-height: calc(100vh - var(--nav-h));
+      max-height: calc(100dvh - var(--nav-h));
+      overflow-y: auto;
+      background: var(--slate);
+      border-top: 1px solid var(--slate-rule);
+    }
+    .site-nav.is-menu-open .site-nav__list,
+    .site-nav__list:target {
+      display: block;
+    }
+    .nav-item {
+      display: block;
+      border-bottom: 1px solid var(--slate-rule);
+    }
+    .nav-trigger {
+      display: none;
+    }
+    .nav-link {
+      min-height: 48px;
+      padding-inline: var(--space-12);
+      border-top: 0;
+      border-bottom: 0;
+      border-left: 3px solid transparent;
+    }
+    .nav-item.is-current > .nav-link {
+      border-left-color: var(--orange);
+    }
+    .nav-group-label {
+      display: block;
+      padding: var(--space-16) var(--space-12) var(--space-4);
+      border-left: 3px solid transparent;
+      color: #c8d0d3;
+      font-weight: 500;
+    }
+    .nav-dropdown {
+      position: static;
+      min-width: 0;
+      padding-bottom: var(--space-8);
+      border-top: 0;
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      transition: none;
+    }
+    .nav-dropdown li + li {
+      border-top: 0;
+    }
+    .nav-dropdown a {
+      padding-inline: var(--space-12);
+      white-space: normal;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .site-nav__cta .btn {
+      padding-inline: var(--space-12);
+    }
+  }
+  @media (max-width: 380px) {
+    .site-nav__inner {
+      column-gap: var(--space-4);
+    }
+    .site-nav__menu-btn {
+      padding-right: var(--space-8);
+    }
+    .site-nav__cta {
+      gap: var(--space-4);
+    }
+    .site-nav__cta .btn {
+      padding-inline: var(--space-8);
+    }
+  }
+</style>
+
+<script>
+  const nav = document.querySelector<HTMLElement>('[data-site-nav]');
+  if (nav) {
+    const desktop = window.matchMedia('(min-width: 861px)');
+    const groups = Array.from(nav.querySelectorAll<HTMLElement>('[data-nav-group]'));
+    const pinned = new WeakSet<HTMLElement>();
+
+    const triggerOf = (group: HTMLElement) => group.querySelector<HTMLElement>('[data-nav-trigger]')!;
+    const linksOf = (group: HTMLElement) => Array.from(group.querySelectorAll<HTMLElement>('.nav-dropdown a'));
+
+    const close = (group: HTMLElement) => {
+      group.classList.remove('is-open');
+      pinned.delete(group);
+      triggerOf(group).setAttribute('aria-expanded', 'false');
+    };
+    const open = (group: HTMLElement, pin: boolean) => {
+      groups.forEach((other) => other !== group && close(other));
+      group.classList.add('is-open');
+      if (pin) pinned.add(group);
+      triggerOf(group).setAttribute('aria-expanded', 'true');
+    };
+    const isOpen = (group: HTMLElement) => group.classList.contains('is-open');
+
+    groups.forEach((group) => {
+      const trigger = triggerOf(group);
+      // Upgrade the fallback link into a disclosure button.
+      trigger.setAttribute('role', 'button');
+      trigger.setAttribute('aria-expanded', 'false');
+
+      trigger.addEventListener('click', (event) => {
+        event.preventDefault();
+        // Opened by hover and then clicked: keep it open (pin) instead of closing it.
+        if (isOpen(group) && pinned.has(group)) close(group);
+        else open(group, true);
+      });
+
+      trigger.addEventListener('keydown', (event) => {
+        if (event.key === ' ') {
+          event.preventDefault();
+          trigger.click();
+        } else if (event.key === 'ArrowDown') {
+          event.preventDefault();
+          open(group, true);
+          linksOf(group)[0]?.focus();
+        }
+      });
+
+      group.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && isOpen(group)) {
+          event.stopPropagation();
+          close(group);
+          trigger.focus();
+          return;
+        }
+        const links = linksOf(group);
+        const index = links.indexOf(document.activeElement as HTMLElement);
+        if (index === -1) return;
+        if (event.key === 'ArrowDown') {
+          event.preventDefault();
+          links[(index + 1) % links.length].focus();
+        } else if (event.key === 'ArrowUp') {
+          event.preventDefault();
+          if (index === 0) trigger.focus();
+          else links[index - 1].focus();
+        }
+      });
+
+      group.addEventListener('mouseenter', () => {
+        if (desktop.matches && !isOpen(group)) open(group, false);
+      });
+      group.addEventListener('mouseleave', () => {
+        if (desktop.matches && !pinned.has(group)) close(group);
+      });
+      group.addEventListener('focusout', (event) => {
+        const next = (event as FocusEvent).relatedTarget as Node | null;
+        if (desktop.matches && (!next || !group.contains(next))) close(group);
+      });
+    });
+
+    document.addEventListener('click', (event) => {
+      groups.forEach((group) => {
+        if (!group.contains(event.target as Node)) close(group);
+      });
+    });
+
+    // Phone menu
+    const menuBtn = nav.querySelector<HTMLElement>('[data-menu-btn]');
+    if (menuBtn) {
+      menuBtn.setAttribute('role', 'button');
+      menuBtn.setAttribute('aria-expanded', 'false');
+      const setMenu = (state: boolean) => {
+        nav.classList.toggle('is-menu-open', state);
+        menuBtn.setAttribute('aria-expanded', String(state));
+      };
+      menuBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        setMenu(!nav.classList.contains('is-menu-open'));
+      });
+      menuBtn.addEventListener('keydown', (event) => {
+        if (event.key === ' ') {
+          event.preventDefault();
+          menuBtn.click();
+        }
+      });
+      nav.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && nav.classList.contains('is-menu-open')) {
+          setMenu(false);
+          menuBtn.focus();
+        }
+      });
+      document.addEventListener('click', (event) => {
+        if (!nav.contains(event.target as Node)) setMenu(false);
+      });
+      desktop.addEventListener('change', () => setMenu(false));
+    }
+  }
+</script>

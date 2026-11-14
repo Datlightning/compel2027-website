@@ -1,0 +1,154 @@
+---
+/**
+ * PageLayout — every inner page: big title, 3px rule, group rail, content column.
+ *
+ *   <PageLayout title="Venues" wide> … </PageLayout>
+ *
+ * The nav group is NOT declared by the page: it is looked up in src/data/nav.json from
+ * the page's own route, and the rail lists that group's pages with the current one marked.
+ *
+ * Props
+ *   title        required. The <h1>.
+ *   description  meta description (optional).
+ *   wide         false (default): rail in cols 1–3, content in cols 5–12; wrap text in
+ *                <div class="prose">. true: the rail becomes a row of links under the
+ *                title and the slot gets the full 12 columns (Venues, Committee) — put
+ *                your own <div class="grid"> inside.
+ *   comingSoon   true renders "Details coming soon." as the body (slot is ignored).
+ *
+ * Slots: default (page body).
+ */
+import BaseLayout from './BaseLayout.astro';
+import ComingSoon from '../components/ComingSoon.astro';
+import nav from '../data/nav.json';
+import { href, routeOf } from '../lib/url';
+
+interface Props {
+  title: string;
+  description?: string;
+  wide?: boolean;
+  comingSoon?: boolean;
+}
+
+type NavItem = { label: string; path?: string; children?: { label: string; path: string }[] };
+
+const { title, description, wide = false, comingSoon = false } = Astro.props;
+const route = routeOf(Astro.url.pathname);
+const group = (nav.items as NavItem[]).find((item) => item.children?.some((child) => child.path === route));
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container page">
+    <header class="page__head">
+      <h1>{title}</h1>
+      <hr class="rule-strong" />
+    </header>
+
+    <div class:list={['grid', 'page__body', wide && 'page__body--wide']}>
+      {
+        group && (
+          <nav class:list={['rail', wide ? 'rail--row' : 'span-3']} aria-label={`${group.label} pages`}>
+            <ul class="plain-list">
+              {group.children!.map((child) => (
+                <li>
+                  <a href={href(child.path)} aria-current={child.path === route ? 'page' : undefined}>
+                    {child.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )
+      }
+      <div class:list={['page__content', !wide && 'start-5 span-8']}>
+        {comingSoon ? <ComingSoon /> : <slot />}
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page__head {
+    padding-top: var(--space-72);
+  }
+  .page__head h1 {
+    padding-bottom: var(--space-24);
+  }
+  .page__body {
+    padding-top: var(--space-48);
+    row-gap: var(--space-32);
+    align-items: start;
+  }
+
+  /* Rail: sibling pages of the current nav group */
+  .rail {
+    font-family: var(--font-ui);
+    font-size: var(--fs-16);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .rail a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: var(--space-8) var(--space-16);
+    border-left: 3px solid transparent;
+    color: var(--slate);
+    text-decoration: none;
+  }
+  .rail a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+  }
+  .rail a[aria-current='page'] {
+    border-left-color: var(--orange);
+  }
+
+  @media (min-width: 861px) {
+    .rail:not(.rail--row) {
+      position: sticky;
+      top: calc(var(--nav-h) + var(--space-24));
+    }
+    .rail:not(.rail--row) li + li a {
+      border-top: 1px solid var(--rule);
+    }
+    .rail:not(.rail--row) ul {
+      border-left: 0;
+    }
+  }
+
+  /* Row form: wide pages on desktop, every page on phones */
+  .rail--row ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-24);
+  }
+  .rail--row a {
+    padding-inline: var(--space-12);
+  }
+  .rail--row li:first-child a,
+  .rail--row a {
+    margin-left: 0;
+  }
+
+  @media (max-width: 860px) {
+    .page__head {
+      padding-top: var(--space-48);
+    }
+    .page__head h1 {
+      padding-bottom: var(--space-16);
+    }
+    .page__body {
+      padding-top: var(--space-24);
+      row-gap: var(--space-24);
+    }
+    .rail ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0 var(--space-16);
+    }
+    .rail a {
+      padding-inline: var(--space-12);
+    }
+  }
+</style>

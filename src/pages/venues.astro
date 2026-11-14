@@ -1,0 +1,13 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import VenueRow from '../components/venues/VenueRow.astro';
+import data from '../data/venues.json';
+---
+
+<PageLayout
+  title="Venues"
+  description="Welch Hall, the Engineering Education and Research Center and the J. J. Pickle Research Campus: where COMPEL 2027 sessions and lab tours take place."
+  wide
+>
+  {data.venues.map((venue, i) => <VenueRow venue={venue} flip={i % 2 === 1} />)}
+</PageLayout>

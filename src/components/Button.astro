@@ -1,0 +1,33 @@
+---
+/**
+ * <Button href="/tutorials/" variant="secondary">Tutorial Proposal</Button>
+ *
+ * Props
+ *   href     required. Internal paths ("/venues/") are run through href(); external URLs,
+ *            mailto: and #anchors are used unchanged. Links open in the same tab.
+ *   variant  'primary' (orange fill, default) | 'secondary' (slate outline)
+ *            | 'outline-light' (white outline, for slate surfaces)
+ *   size     'md' (56px, default) | 'lg' (72px, home hero) | 'sm' (44px, nav bar)
+ *   block    true for full width
+ *   class    extra classes
+ * Any other attribute (download, aria-*, …) is passed to the <a>.
+ */
+import { href as url } from '../lib/url';
+
+interface Props {
+  href: string;
+  variant?: 'primary' | 'secondary' | 'outline-light';
+  size?: 'md' | 'lg' | 'sm';
+  block?: boolean;
+  class?: string;
+  [attr: string]: unknown;
+}
+
+const { href, variant = 'primary', size = 'md', block = false, class: className, ...rest } = Astro.props;
+---
+
+<a
+  href={url(href)}
+  class:list={['btn', `btn--${variant}`, size !== 'md' && `btn--${size}`, block && 'btn--block', className]}
+  {...rest}><slot /></a
+>

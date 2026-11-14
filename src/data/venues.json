@@ -1,0 +1,42 @@
+{
+  "_help": "One entry per venue, shown in this order. 'description' is HTML: wrap each paragraph in <p>…</p> and write links as <a href=\"https://…\">text</a>. 'addressNote' is optional plain text shown after the address link. 'image' is a file in public/images; 'imageWidth'/'imageHeight' are that file's pixel size.",
+  "venues": [
+    {
+      "id": "welch-hall",
+      "name": "Welch Hall",
+      "role": "Conference Venue (Sessions & Expo Hall)",
+      "address": "105 E 24th St, Austin, TX 78712",
+      "mapUrl": "https://maps.app.goo.gl/MgEuXuqVNpgCEKXP9",
+      "image": "/images/venue-welch.jpg",
+      "imageWidth": 1600,
+      "imageHeight": 1200,
+      "imageAlt": "Welch Hall on the University of Texas at Austin main campus",
+      "description": "<p>Welch Hall contains some of the largest lecture halls and classrooms on main campus and will be the main venue for COMPEL 2027.</p>"
+    },
+    {
+      "id": "eer",
+      "name": "Engineering Education and Research Center (EER)",
+      "role": "Lab Tours",
+      "address": "2501 Speedway, Austin, TX 78712",
+      "mapUrl": "https://maps.app.goo.gl/TTWEH4vJVQJzuEEE8",
+      "image": "/images/venue-eer.jpg",
+      "imageWidth": 1024,
+      "imageHeight": 768,
+      "imageAlt": "The Engineering Education and Research Center building at UT Austin",
+      "description": "<p>Home to <a href=\"https://ece.utexas.edu/\">UT Austin's Chandra Department of Electrical and Computer Engineering</a>, the Engineering Education and Research Center (<a href=\"https://cockrell.utexas.edu/about/facilities/eerc-building/\">EER</a>) spans over 450,000 square feet of learning and research space. It houses <a href=\"https://inventionworks.engr.utexas.edu/\">Texas Inventionworks</a>' 23,000-square-foot makerspace, the <a href=\"https://tmi.utexas.edu/\">Texas Materials Institute</a>'s advanced materials analysis and nanofabrication facilities, and the <a href=\"https://texasinnovationcenter.utexas.edu/\">Texas Innovation Center</a> for emerging ventures and startups.</p><p>Attendees can sign up for the tour of EER's facilities on Friday 6/17 as part of their registration at no additional cost.</p>"
+    },
+    {
+      "id": "pickle",
+      "name": "J. J. Pickle Research Campus",
+      "role": "Lab Tours",
+      "address": "10500 Exploration Way, Austin, TX 78758",
+      "addressNote": "(CEM)",
+      "mapUrl": "https://maps.app.goo.gl/kShyZpnGUfZNeTwc7",
+      "image": "/images/venue-pickle.jpg",
+      "imageWidth": 1195,
+      "imageHeight": 805,
+      "imageAlt": "Aerial view of the J. J. Pickle Research Campus in northwest Austin",
+      "description": "<p>The Pickle Research campus is UT Austin's 475 acre research facility located in northwest Austin (9 mi from main campus). Among its facilities include the <a href=\"https://research.utexas.edu/mrc\">Microelectronics Research Center (MER)</a>, which facilitates research in electronic, spintronic, and MEMS materials, devices and systems with its 12,000 ft of class 100 cleanroom space. The <a href=\"https://cem.utexas.edu/content/about-us\">Center for Electromechanics</a> (CEM) supports research in electric machines, grid solutions, and hydrogen energy systems.</p><p>Attendees can sign up for the tour of Pickle campus on Monday 6/14 as part of their registration at no additional cost. Transportation to Pickle from main campus will be provided.</p>"
+    }
+  ]
+}
