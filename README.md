@@ -4,13 +4,35 @@ The website for IEEE COMPEL 2027 (University of Texas at Austin, June 14-17, 202
 
 You can make every change below on github.com: open the file, click the pencil icon, edit, then click "Commit changes".
 
+## Editing content from the spreadsheet (easiest)
+
+Dates, announcements, the contact email, the conference dates and the Registration and Digest Submission links can all be edited in one Google Sheet. No GitHub needed. The site reads the sheet about every 6 hours, and an organizer can force an update right away.
+
+**One-time setup (about 5 minutes)**
+
+1. Go to [sheets.new](https://sheets.new), then File > Import > Upload, and choose `sheet-template/COMPEL-2027-site-content.xlsx` from this repo. Pick "Replace spreadsheet". The tabs are `READ ME`, `Settings`, `Dates` and `Announcements`, already filled with the current content.
+2. Click Share. Add each organizer as Editor. Set General access to **Anyone with the link: Viewer** (the website needs to read it; people with only the link can't edit).
+3. Copy the sheet's ID: the long text in its address, `https://docs.google.com/spreadsheets/d/`**`THIS-PART`**`/edit`.
+4. On GitHub: Settings > Secrets and variables > Actions > **Variables** tab > New repository variable. Name `SHEET_ID`, value the ID from step 3.
+5. Actions tab > "Sync content from spreadsheet" > Run workflow. It should finish green and the site redeploys.
+
+**Day to day**
+
+- Edit the sheet. Within about 6 hours the site follows. To update immediately: Actions > Sync content from spreadsheet > Run workflow.
+- Dates tab: type real dates (`2027-02-19` is safest). Leave Display blank for "February 19, 2027" or type your own text. The home page counts down to 11:59 PM Central on the next date.
+- Announcements tab: Order controls position (higher is nearer the top when there is no date); set Show to `no` to hide a row. The Body accepts Markdown. A button needs both a label and a link.
+- Settings tab: edit the Value column only.
+- If a cell can't be understood (for example a date typed as "soon"), the sync stops and the site keeps its old content. The red X on the workflow run lists the exact row to fix.
+
+**Important:** while the spreadsheet is in use, the sheet is the source of truth for those items. The sync replaces `src/data/dates.json`, everything in `src/content/announcements/` and those Settings values, so edits made to those files on GitHub will be overwritten. Everything else (page text, committee, sponsors, venues, menu) is still edited as described below.
+
 ## Where things are
 
 | What | File |
 |---|---|
 | Text of a page | `src/content/pages/<page>.md` |
-| Announcements on the home page | `src/content/announcements/` (one file each) |
-| Important dates table | `src/data/dates.json` |
+| Announcements on the home page | the spreadsheet (or `src/content/announcements/`, one file each) |
+| Important dates table | the spreadsheet (or `src/data/dates.json`) |
 | Committee members | `src/data/committee.json` |
 | Sponsors | `src/data/sponsors.json` |
 | Registration and submission links, contact email, address | `src/data/site.json` |

@@ -1,8 +1,8 @@
 ---
-title: New this year for oral presentations
+title: "New this year for oral presentations"
 order: 2
-buttonLabel: Pitch Information
-buttonHref: /pitch-information/
+buttonLabel: "Pitch Information"
+buttonHref: "/pitch-information/"
 ---
 
 All **accepted** authors who indicate a preference to present their paper in an oral session will be required to submit a recorded elevator pitch. The committee will use these pitches to help assign oral/poster session slots.

@@ -6,10 +6,22 @@
   "dates": "June 14-17, 2027",
   "startDate": "2027-06-14",
   "endDate": "2027-06-17",
-  "address": ["University of Texas at Austin", "2501 Speedway", "Austin, Texas, United States, 78712"],
+  "address": [
+    "University of Texas at Austin",
+    "2501 Speedway",
+    "Austin, Texas, United States, 78712"
+  ],
   "email": "compel2027organizers@gmail.com",
   "registrationUrl": "https://event.fourwaves.com/compel2027/registration",
   "submissionUrl": "https://event.fourwaves.com/compel2027/submission",
-  "pels": { "label": "IEEE Power Electronics Society", "url": "https://www.ieee-pels.org/" },
-  "logo": { "src": "/images/logo-banner.png", "alt": "IEEE COMPEL 2027, Workshop on Control and Modeling for Power Electronics, 14 – 17 June 2027, Austin, Texas, USA", "width": 1706, "height": 422 }
+  "pels": {
+    "label": "IEEE Power Electronics Society",
+    "url": "https://www.ieee-pels.org/"
+  },
+  "logo": {
+    "src": "/images/logo-banner.png",
+    "alt": "IEEE COMPEL 2027, Workshop on Control and Modeling for Power Electronics, 14 – 17 June 2027, Austin, Texas, USA",
+    "width": 1706,
+    "height": 422
+  }
 }
