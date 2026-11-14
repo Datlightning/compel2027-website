@@ -51,5 +51,29 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
       <slot />
     </main>
     <Footer />
+    <script>
+      // Fade content blocks in as they scroll into view. Skipped for reduced motion / no observer support.
+      const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!calm && 'IntersectionObserver' in window) {
+        const targets = document.querySelectorAll<HTMLElement>(
+          'main .home-grid > div, main .sponsors, main .prose > *, main .page-content > *',
+        );
+        const seen = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                seen.unobserve(entry.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px' },
+        );
+        targets.forEach((el) => {
+          el.classList.add('reveal');
+          seen.observe(el);
+        });
+      }
+    </script>
   </body>
 </html>

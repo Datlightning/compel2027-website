@@ -41,8 +41,8 @@ jobs:
         run: |
           src=assets-src/header-current.png
           if [ -s "$src" ] && file -b --mime-type "$src" | grep -q '^image/'; then
-            # photo region only: x from 20% to 100% of the width, y from 0 to 38% of the height
-            convert "$src" -gravity NorthEast -crop '80%x38%+0+0' +repage -strip -quality 88 public/images/hero-campus.jpg
+            # photo region only, above the logo overlay (source is 1469x753): 1155x287 at +300+85
+            convert "$src" -crop 1155x287+300+85 +repage -strip -quality 88 public/images/hero-campus.jpg
             echo "created hero-campus.jpg"
           else
             echo "skipped hero-campus.jpg (header-current.png not downloaded)"

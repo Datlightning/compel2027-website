@@ -679,6 +679,70 @@ table.table--band thead th,
 
 /* ---------- Motion ---------- */
 
+/* Hover and focus feedback: colours ease rather than snap. */
+a,
+.btn,
+.nav-link,
+.nav-dropdown a,
+.rail a,
+.table tbody tr,
+.table tbody th,
+.table tbody td {
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease,
+    text-decoration-color 180ms ease;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgb(29 43 51 / 0.18);
+}
+.btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+.btn--outline-light:hover {
+  box-shadow: 0 6px 14px rgb(0 0 0 / 0.3);
+}
+/* Table rows light up under the pointer. */
+.table tbody tr:hover > *,
+.prose table tbody tr:hover > * {
+  background-color: var(--panel);
+}
+.rail a:hover {
+  background-color: var(--panel);
+  transform: translateX(2px);
+}
+
+/* Page and section fades. Without JS nothing is hidden. */
+@keyframes page-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  main {
+    animation: page-fade 450ms ease-out both;
+  }
+  .js .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 700ms ease-out,
+      transform 700ms ease-out;
+  }
+  .js .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

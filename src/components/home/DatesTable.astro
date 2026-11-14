@@ -2,12 +2,19 @@
 /**
  * Important dates — a real <table> fed by src/data/dates.json
  * ({ note, rows: [{ milestone, date: "YYYY-MM-DD", display }] }).
- * The inline script marks rows whose date has passed (deadlines are end of day, Central Time).
+ * The inline script marks rows whose deadline has passed (11:59:59 PM Central Time), highlights
+ * the next one and shows a countdown to it that gains precision as it gets closer.
  */
 import dates from '../../data/dates.json';
 ---
 
 <div class="dates">
+  <p class="countdown" data-countdown hidden>
+    <span class="countdown__eyebrow">Next deadline</span>
+    <span class="countdown__label" data-countdown-label></span>
+    <span class="countdown__time tabular" data-countdown-time role="timer"></span>
+    <span class="countdown__eyebrow">remaining, 11:59 PM CT</span>
+  </p>
   <table class="table table--band" data-dates>
     <caption>Important dates</caption>
     <thead>
@@ -34,29 +41,74 @@ import dates from '../../data/dates.json';
 
 <script is:inline>
   (function () {
-    var today;
+    var TZ = 'America/Chicago';
+    var rows = document.querySelectorAll('[data-dates] tr[data-date]');
+    var box = document.querySelector('[data-countdown]');
+    var fmt;
     try {
-      // en-CA formats as YYYY-MM-DD; deadlines run to the end of the day in Central Time
-      today = new Intl.DateTimeFormat('en-CA', {
-        timeZone: 'America/Chicago',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      }).format(new Date());
+      fmt = new Intl.DateTimeFormat('en-US', {
+        timeZone: TZ, hourCycle: 'h23', year: 'numeric', month: 'numeric', day: 'numeric',
+        hour: 'numeric', minute: 'numeric', second: 'numeric',
+      });
     } catch (e) {
       return;
     }
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(today)) return;
-    var rows = document.querySelectorAll('[data-dates] tr[data-date]');
-    for (var i = 0; i < rows.length; i++) {
-      if (rows[i].getAttribute('data-date') < today) {
-        rows[i].classList.add('is-past');
-        var note = document.createElement('span');
-        note.className = 'visually-hidden';
-        note.textContent = ' (passed)';
-        rows[i].lastElementChild.appendChild(note);
-      }
+    // Milliseconds Central Time is ahead of UTC at a given instant (negative).
+    function offset(ms) {
+      var p = {};
+      fmt.formatToParts(new Date(ms)).forEach(function (x) { p[x.type] = +x.value; });
+      return Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second) - Math.floor(ms / 1000) * 1000;
     }
+    // The instant 11:59:59 PM Central on a YYYY-MM-DD date.
+    function deadline(ymd) {
+      var d = ymd.split('-');
+      var wall = Date.UTC(+d[0], +d[1] - 1, +d[2], 23, 59, 59);
+      var guess = wall - offset(wall);
+      return wall - offset(guess);
+    }
+    var items = [];
+    for (var i = 0; i < rows.length; i++) {
+      items.push({ row: rows[i], end: deadline(rows[i].getAttribute('data-date')) });
+    }
+    function plural(n, word) { return n + ' ' + word + (n === 1 ? '' : 's'); }
+    // More precision the closer the deadline: days, then days+hours, hours+minutes, minutes+seconds.
+    function remaining(ms) {
+      var s = Math.max(0, Math.floor(ms / 1000));
+      var d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600);
+      var m = Math.floor((s % 3600) / 60), sec = s % 60;
+      if (d >= 14) return plural(d, 'day');
+      if (d >= 2) return plural(d, 'day') + ', ' + plural(h, 'hour');
+      if (s >= 3600) return plural(Math.floor(s / 3600), 'hour') + ', ' + plural(m, 'minute');
+      return plural(Math.floor(s / 60), 'minute') + ', ' + plural(sec, 'second');
+    }
+    function tick() {
+      var now = Date.now();
+      var next = null;
+      items.forEach(function (it) {
+        var past = it.end < now;
+        if (past && !it.row.classList.contains('is-past')) {
+          it.row.classList.add('is-past');
+          var note = document.createElement('span');
+          note.className = 'visually-hidden';
+          note.textContent = ' (passed)';
+          it.row.lastElementChild.appendChild(note);
+        }
+        if (!past && !next) next = it;
+      });
+      items.forEach(function (it) { it.row.classList.toggle('is-next', !!next && it.end === next.end); });
+      if (!box) return;
+      if (!next) { box.hidden = true; return; }
+      var names = items.filter(function (it) { return it.end === next.end; })
+        .map(function (it) { return it.row.firstElementChild.textContent.trim(); });
+      box.hidden = false;
+      box.querySelector('[data-countdown-label]').textContent = names.join(' and ');
+      box.querySelector('[data-countdown-time]').textContent = remaining(next.end - now);
+      // Tick every second only when seconds are shown.
+      var wait = next.end - now < 3600000 ? 1000 : 30000;
+      clearTimeout(tick.t);
+      tick.t = setTimeout(tick, wait);
+    }
+    tick();
   })();
 </script>
 
@@ -73,6 +125,45 @@ import dates from '../../data/dates.json';
     font-size: var(--fs-16);
     color: var(--muted);
     font-variant-numeric: tabular-nums;
+  }
+  .countdown {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-4) var(--space-12);
+    margin-bottom: var(--space-24);
+    padding: var(--space-16) var(--space-24);
+    border-left: 6px solid var(--orange);
+    background: var(--panel);
+    font-family: var(--font-ui);
+    color: var(--slate);
+  }
+  .countdown[hidden] {
+    display: none;
+  }
+  .countdown__eyebrow {
+    font-size: var(--fs-14);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .countdown__label {
+    font-size: var(--fs-18);
+    font-weight: 700;
+  }
+  .countdown__time {
+    font-size: var(--fs-28);
+    font-weight: 800;
+    color: var(--orange-deep);
+  }
+  tr.is-next th,
+  tr.is-next td {
+    background: var(--panel);
+    box-shadow: inset 4px 0 0 var(--orange);
+  }
+  tr.is-next td {
+    box-shadow: none;
   }
   tr.is-past th,
   tr.is-past td {

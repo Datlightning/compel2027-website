@@ -3,7 +3,7 @@
  * Home. Layout per DESIGN.md "Home":
  *   hero photo + title block + two calls to action, the PWM line, then
  *   desktop: dates (cols 1-7) beside welcome (cols 9-12), announcements (cols 1-9) below;
- *   phones:  dates, announcements, welcome.
+ *   phones:  dates, welcome, announcements (announcements are always last).
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/home/Hero.astro';
@@ -19,8 +19,8 @@ import Sponsors from '../components/home/Sponsors.astro';
   <Waveform />
   <div class="container section home-grid">
     <div class="home-dates"><DatesTable /></div>
-    <div class="home-announcements"><Announcements /></div>
     <div class="home-welcome"><Welcome /></div>
+    <div class="home-announcements"><Announcements /></div>
   </div>
   <Sponsors />
   <div class="home-end"></div>

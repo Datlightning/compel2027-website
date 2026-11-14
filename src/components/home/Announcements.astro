@@ -3,7 +3,7 @@
  * Announcements — one item per file in src/content/announcements/*.md.
  * Frontmatter: title, optional date (shown only when present), optional order
  * (higher = nearer the top among undated items), optional buttonLabel + buttonHref.
- * Newest first. The list scrolls inside its own 420px region.
+ * Newest first. Plain list at the bottom of the home page; no inner scrolling.
  */
 import { getCollection, render } from 'astro:content';
 import Button from '../Button.astro';
@@ -20,7 +20,7 @@ const fmt = new Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeZone: 'UTC
   items.length > 0 && (
     <section class="ann" aria-labelledby="announcements-heading">
       <h2 id="announcements-heading">Announcements</h2>
-      <div class="ann__scroll" role="region" aria-label="Announcements list, scrollable" tabindex="0">
+      <div class="ann__list">
         {items.map(({ entry, Content }) => (
           <article class="ann__item">
             <h3 class="h-28">{entry.data.title}</h3>
@@ -47,17 +47,10 @@ const fmt = new Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeZone: 'UTC
 }
 
 <style>
-  .ann__scroll {
+  .ann__list {
     margin-top: var(--space-24);
-    max-height: 420px;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-color: var(--slate) var(--panel);
     border-left: 3px solid var(--slate);
     padding: 0 var(--space-32) 0 var(--space-32);
-  }
-  .ann__scroll:focus-visible {
-    outline-offset: 4px;
   }
   .ann__item {
     padding-block: var(--space-24);
@@ -89,7 +82,7 @@ const fmt = new Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeZone: 'UTC
   }
 
   @media (max-width: 860px) {
-    .ann__scroll {
+    .ann__list {
       margin-top: var(--space-16);
       padding-inline: var(--space-16);
     }

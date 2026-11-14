@@ -23,6 +23,8 @@ Done and building (`npm run build`, 10 pages, also works with `BASE_PATH=/`):
 - `README.md` for organizers (editing content, custom domain, questions for Elaine).
 - Workflows: `.github/workflows/deploy.yml` (GitHub Pages on push to `main`) and `fetch-assets.yml` (manual; downloads the real images and PDFs from Fourwaves and commits them).
 
+Updated 2026-11-13 (later): hero crop fixed (`hero-campus.jpg` is now a 1155×287 JPEG of the photo only; the workflow crops `+300+85` of the 1469×753 source), dates table has a live "next deadline" countdown (days → days+hours → hours+minutes → minutes+seconds) and highlights the next row, hover/arrow/fade polish added (`global.css` Motion section, header chevrons, reveal script in `BaseLayout.astro`, all disabled under reduced motion), announcements are a plain list at the very bottom (no scroll box).
+
 Key conventions:
 
 - Every internal link or asset URL in `.astro` files goes through `href()` from `src/lib/url.ts`. Markdown links are prefixed automatically.

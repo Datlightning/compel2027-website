@@ -150,6 +150,21 @@ const siteUrls = site as unknown as Record<string, string>;
   .nav-item.is-current > .nav-link {
     border-top-color: var(--orange);
   }
+  /* Dropdown arrow: a small chevron that flips when the group is open. */
+  .nav-trigger::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    margin-left: var(--space-8);
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform 220ms ease;
+  }
+  .nav-item--group.is-open > .nav-trigger::after,
+  :global(html:not(.js)) .nav-item--group:hover > .nav-trigger::after {
+    transform: translateY(1px) rotate(225deg);
+  }
   .nav-link:focus-visible,
   .site-nav__menu-btn:focus-visible,
   .nav-dropdown a:focus-visible {
@@ -170,11 +185,11 @@ const siteUrls = site as unknown as Record<string, string>;
     border-top: 1px solid var(--slate-rule);
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-4px);
+    transform: translateY(-6px);
     transition:
-      opacity 120ms ease,
-      transform 120ms ease,
-      visibility 0s linear 120ms;
+      opacity 220ms ease,
+      transform 220ms ease,
+      visibility 0s linear 220ms;
   }
   .nav-dropdown li + li {
     border-top: 1px solid var(--slate-rule);
@@ -191,6 +206,12 @@ const siteUrls = site as unknown as Record<string, string>;
   }
   .nav-dropdown a:hover {
     background: var(--slate-rule);
+    padding-left: calc(var(--space-16) + 4px);
+  }
+  .nav-dropdown a {
+    transition:
+      background-color 180ms ease,
+      padding-left 180ms ease;
   }
   .nav-dropdown a[aria-current='page'] {
     border-left-color: var(--orange);
