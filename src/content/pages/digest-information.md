@@ -4,7 +4,7 @@ title: Digest Information
 
 ## Call for Papers
 
-Click below to download the call for papers.
+![IEEE COMPEL 2027 Call for Papers flyer: 28th Workshop on Control and Modeling for Power Electronics, June 14-17, 2027, Austin, Texas. Digest submission and tutorial proposals due February 19, 2027; notification of acceptance March 26, 2027; oral pitch submission April 9, 2027; oral notification May 10, 2027; final material submission June 1, 2027. Venue: Welch Hall. General Chair: Prof. Alex J. Hanson. Questions: compel2027organizers@gmail.com.](/images/call-for-papers-flyer.jpg)
 
 [Download: IEEE COMPEL 2027 Call for Papers Flyer.pdf](/files/IEEE-COMPEL-2027-Call-for-Papers-Flyer.pdf)
 
